@@ -1,6 +1,10 @@
 from destination import Destination
 from soup import return_soup
+import threading
 from timing import timeit
+from excel import get_excel
+import os
+import subprocess
 
 def update_info(destination):
     dest_soup = return_soup(destination.url)
@@ -13,7 +17,7 @@ def update_info(destination):
 url = "https://www.kaerntencard.at/sommer/en/ausflugsziele-uebersicht/"
 soup = return_soup(url)
 
-#TO-DO rewrite to use multithreading
+#TO-DO rewrite to use multithreading without GIL
 @timeit
 def fetch_destinations():
     excursion_destinations = []
@@ -25,9 +29,20 @@ def fetch_destinations():
         destination.name = h3.text
         
         destination.url = div.find('a', class_='btn-std')['href']
-        update_info(destination)
         excursion_destinations.append(destination)
+    
+    threads = []
+    for destination in excursion_destinations:
+        thread = threading.Thread(target=update_info, args=[destination])
+        threads.append(thread)
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     return excursion_destinations
 
 excursion_destinations = fetch_destinations()
+get_excel(excursion_destinations)
+
+subprocess.Popen(f'explorer {os.getcwd()}')
