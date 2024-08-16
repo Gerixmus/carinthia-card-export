@@ -1,10 +1,28 @@
 import pandas as pd
 from timing import timeit
+from openpyxl import Workbook
+from openpyxl.styles import Font
 
-#TO-DO switch to openpyxl
 @timeit
 def get_excel(excursion_destinations):
-    colums = ["Name", "Description", "Contact"]
-    data = [['=HYPERLINK("%s", "%s")' % (dest.url, dest.name.replace("\"", "'")), dest.description, str.join(", ", dest.contact_info)] for dest in excursion_destinations]
-    df = pd.DataFrame(data=data, columns=colums)
-    df.to_excel('./output/destinations.xlsx', index=False)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Destinations"
+
+    ws.append(["Name", "Description", "Contact"])
+
+    counter = 2
+    for dest in excursion_destinations:
+        ws[f'A{counter}'].hyperlink = dest.url
+        ws[f'A{counter}'].value = dest.name
+        ws[f'A{counter}'].style = "Hyperlink"
+        ws[f'B{counter}'].value = dest.description
+        ws[f'C{counter}'].value = str.join(", ", dest.contact_info)
+        counter += 1
+
+    ft = Font(bold=True)
+    for row in ws["A1:C1"]:
+        for cell in row:
+            cell.font = ft
+
+    wb.save('./output/destinations.xlsx')
