@@ -1,7 +1,7 @@
 import pandas as pd
 from timing import timeit
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from openpyxl.styles import Font, Alignment
 
 @timeit
 def get_excel(excursion_destinations):
@@ -16,8 +16,11 @@ def get_excel(excursion_destinations):
         ws[f'A{counter}'].hyperlink = dest.url
         ws[f'A{counter}'].value = dest.name
         ws[f'A{counter}'].style = "Hyperlink"
+        ws[f'A{counter}'].alignment = Alignment(vertical='center')
         ws[f'B{counter}'].value = dest.description
-        ws[f'C{counter}'].value = str.join(", ", dest.contact_info)
+        ws[f'B{counter}'].alignment = Alignment(wrap_text=True, vertical='center')
+        ws[f'C{counter}'].value = str.join("\n", dest.contact_info)
+        ws[f'C{counter}'].alignment = Alignment(wrap_text=True, vertical='center')
         counter += 1
 
     ft = Font(bold=True)
@@ -25,4 +28,15 @@ def get_excel(excursion_destinations):
         for cell in row:
             cell.font = ft
 
+    max_name, max_text, max_contact = get_column_widths(excursion_destinations)
+    ws.column_dimensions["A"].width = max_name
+    ws.column_dimensions["B"].width = max_text
+    ws.column_dimensions["C"].width = max_contact
+
     wb.save('./output/destinations.xlsx')
+
+def get_column_widths(excursion_destinations):
+    max_name = max([len(i.name) for i in excursion_destinations])
+    max_contact = max([len(max(i.contact_info)) for i in excursion_destinations])
+    max_text = max(max_name, max_contact)
+    return max_name + 2, max_text +2, max_contact + 2
