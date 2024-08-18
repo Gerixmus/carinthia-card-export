@@ -1,6 +1,10 @@
+from dataclasses import dataclass
+import inspect
+
+@dataclass
 class Destination:
-    name = None
-    description = None
-    url = None
-    price = None
-    contact_info = None
+    name: str = None
+    description: str = None
+    url: str = None
+    price: str = None
+    contact_info: list = None

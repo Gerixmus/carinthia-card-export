@@ -1,10 +1,7 @@
-import pandas as pd
-from timing import timeit
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 
-@timeit
-def get_excel(excursion_destinations) -> list:
+def get_excel(excursion_destinations) -> None:
     """Creates excel spreadsheet from list of destination objects.
 
     Args:
@@ -50,6 +47,6 @@ def get_column_widths(excursion_destinations) -> tuple:
         tuple: Tuple containing suggested column widths.
     """
     max_name = max([len(i.name) for i in excursion_destinations])
-    max_contact = max([len(max(i.contact_info)) for i in excursion_destinations])
+    max_contact = max([len(max(i.contact_info, key=len)) for i in excursion_destinations])
     max_text = max(max_name, max_contact)
     return max_name + 2, max_text +2, max_contact + 2
