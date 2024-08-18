@@ -7,6 +7,11 @@ import os
 import subprocess
 
 def update_info(destination):
+    """Send request to a destination specific url and update the data.
+
+    Args:
+        destination (Destination): Object containing the url.
+    """
     dest_soup = return_soup(destination.url)
     p = dest_soup.find('div', 'content-txt').find('p')
     destination.description = p.text
