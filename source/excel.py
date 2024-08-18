@@ -4,7 +4,12 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 
 @timeit
-def get_excel(excursion_destinations):
+def get_excel(excursion_destinations) -> list:
+    """Creates excel spreadsheet from list of destination objects.
+
+    Args:
+        excursion_destinations (list): List containing destination objects.
+    """
     wb = Workbook()
     ws = wb.active
     ws.title = "Destinations"
@@ -35,7 +40,15 @@ def get_excel(excursion_destinations):
 
     wb.save('./output/destinations.xlsx')
 
-def get_column_widths(excursion_destinations):
+def get_column_widths(excursion_destinations) -> tuple:
+    """Returns suggested column width for 3 rows present in excel file.
+
+    Args:
+        excursion_destinations (list): List containing destination objects.
+
+    Returns:
+        tuple: Tuple containing suggested column widths.
+    """
     max_name = max([len(i.name) for i in excursion_destinations])
     max_contact = max([len(max(i.contact_info)) for i in excursion_destinations])
     max_text = max(max_name, max_contact)
